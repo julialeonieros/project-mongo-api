@@ -2,8 +2,12 @@
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
+import listEndpoints from 'express-list-endpoints'
+import dotenv from 'dotenv'
 
 import booksData from './data/books.json'
+
+dotenv.config()
 
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-mongo"
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -54,8 +58,9 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+// list with all endpoints
 app.get('/', (req, res) => {
-  res.send('API Book reviews')
+  res.send(listEndpoints(app))
 })
 
 // query to get all books or filter on author and/or title
