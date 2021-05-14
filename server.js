@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
@@ -10,12 +11,24 @@ mongoose.Promise = Promise
 
 const bookSchema = new mongoose.Schema({
   bookID: Number,
-  title: String,
-  authors: String,
+  title: {
+    type: String,
+    lowercase: true
+  },
+  authors: {
+    type: String,
+    lowercase: true
+  },
   average_rating: Number,
-  isbn: String,
+  isbn: {
+    type: String,
+    lowercase: true
+  },
   isbn13: Number,
-  language_code: String,
+  language_code: {
+    type: String,
+    lowercase: true
+  },
   num_pages: Number,
   ratings_count: Number,
   text_reviews_count: Number
@@ -27,6 +40,7 @@ const Book = mongoose.model('Book', bookSchema)
 if (process.env.RESET_DB) {
   const seedDB = async () => {
     await Book.deleteMany()
+
     booksData.forEach((item) => {
       new Book(item).save()
     })
@@ -44,27 +58,54 @@ app.get('/', (req, res) => {
   res.send('API Book reviews')
 })
 
+// query to get all books or filter on author and/or title
 app.get('/books', async (req, res) => {
-  const allBooks = await Book.find()
-  res.json(allBooks)
+  const { author, title } = req.query
+  const authorRegex = new RegExp(author, 'i')
+  const titleRegex = new RegExp(title, 'i')
+
+  const books = await Book.find({
+    authors: authorRegex,
+    title: titleRegex
+  })
+  res.json(books)
 })
 
-app.get('/books/id/:bookID', async (req, res) => {
-  const findID = await Book.findOne({ bookID: req.params.bookID })
-  if (findID) {
-    res.json(findID)
-  } else {
-    res.status(404).json({ error: 'Sorry, no book found with that ID' })
+// find book based on id
+app.get('/books/id/:id', async (req, res) => {
+  const { id } = req.params
+  
+  try {
+    const findId = await Book.findById(id)
+    if (findId) {
+      res.json(findId)
+    } else {
+      res.status(404).json('Sorry, no book found with that ID')
+    }
+  } catch (error) {
+    res.status(400).json({ error: 'Invalid request', details: error })
   }
 })
 
+// find book based on ISBN
 app.get('/books/isbn/:isbn', async (req, res) => {
-  const findIsbn = await Book.findOne({ isbn: req.params.isbn })
-  if (findIsbn) {
-    res.json(findIsbn)
-  } else {
-    res.status(404).json({ error: 'Sorry, no book with that isbn' })
+  try {
+    const findIsbn = await Book.findOne({ isbn: req.params.isbn })
+
+    if (findIsbn) {
+      res.json(findIsbn)
+    } else {
+      res.status(404).json('Sorry, no book with that ISBN')
+    }
+  } catch (error) {
+    res.status(400).json({ error: 'Invalid ISBN', details: error })
   }
+})
+
+// endpoint to get a list with the 10 books that has the highest rating
+app.get('/books/top10', async (req, res) => {
+  const top10 = await Book.find().sort({ average_rating: -1 })
+  res.json(top10.slice(0, 10))
 })
 
 app.listen(port, () => {
