@@ -63,6 +63,19 @@ app.get('/', (req, res) => {
   res.send(listEndpoints(app))
 })
 
+// query to get all books or filter on author and/or title
+app.get('/books', async (req, res) => {
+  const { author, title } = req.query
+  const authorRegex = new RegExp(author, 'i')
+  const titleRegex = new RegExp(title, 'i')
+
+  const books = await Book.find({
+    authors: authorRegex,
+    title: titleRegex
+  })
+  res.json(books)
+})
+
 // find book based on id
 app.get('/books/id/:id', async (req, res) => {
   const { id } = req.params
