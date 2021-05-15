@@ -3,11 +3,11 @@ import express from 'express'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import listEndpoints from 'express-list-endpoints'
-// import dotenv from 'dotenv'
+import dotenv from 'dotenv'
 
 import booksData from './data/books.json'
 
-// dotenv.config()
+dotenv.config()
 
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-mongo"
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -63,6 +63,7 @@ app.get('/', (req, res) => {
   res.send(listEndpoints(app))
 })
 
+// query to get all books or filter on author and/or title
 app.get('/books', async (req, res) => {
   const { author, title } = req.query
   const authorRegex = new RegExp(author, 'i')
