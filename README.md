@@ -12,5 +12,13 @@ I used a dataset about bookreviews. My API contains queries for filtering on aut
 * Mongoose
 * Postman
 
+## Endpoints
+* '/' - See a list of endpoints
+* '/book' - See all books
+* '/books?author=[...]&title=[...] - Search for authors and/or title
+* '/books/[id] - Search for book by ID
+* '/books/isbn/[isbn] - Search for book by ISBN
+* '/books/top10' - Get a list of the 10 books with the highest rating
+
 ## View it live
 https://books-mongodb.herokuapp.com/

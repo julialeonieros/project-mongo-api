@@ -81,7 +81,7 @@ app.get('/books', async (req, res) => {
 })
 
 // find book based on id
-app.get('/books/id/:id', async (req, res) => {
+app.get('/books/:id', async (req, res) => {
   const { id } = req.params
   
   try {
