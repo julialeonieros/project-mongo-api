@@ -112,9 +112,9 @@ app.get('/books/isbn/:isbn', async (req, res) => {
 })
 
 // endpoint to get a list with the 10 books that has the highest rating
-app.get('/books/top10', async (req, res) => {
-  const top10 = await Book.find().sort({ average_rating: -1 })
-  res.json(top10.slice(0, 10))
+app.get('/top10', async (req, res) => {
+  const top10 = await Book.find().sort({ average_rating: -1 }).limit(20).exec()
+  res.json(top10)
 })
 
 app.listen(port, () => {
