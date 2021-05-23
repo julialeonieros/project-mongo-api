@@ -8,7 +8,7 @@ I used a dataset about bookreviews. My API contains queries for filtering on aut
 * Node.js
 * Express
 * JavaScript
-* MondoDB
+* MongoDB
 * Mongoose
 * Postman
 
